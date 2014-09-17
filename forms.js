@@ -1,7 +1,13 @@
 Form = function (schema, value) {
 	this.name = schema.name;
 	this.value = value;
-	this.schema = schema instanceof Schema ? schema : new Schema(schema);
+
+	if (schema && !(schema instanceof Schema)) {
+		schema = new Schema(schema);
+	}
+	if (schema) {
+		this.attachSchema(schema);
+	}
 
 	this.dep = new Deps.Dependency();
 	this.dep.deps = {};
@@ -10,8 +16,9 @@ Form = function (schema, value) {
 var Field = function (parent, fieldName) {
 	this.name = fieldName;
 	this.value = parent.value && parent.value[fieldName];
-	this.schema = parent.schema && parent.schema.schema[fieldName];
 	this.parent = parent;
+
+	if (parent.schema) this.attachSchema(parent.schema[fieldName]);
 
 	this.dep = parent.dependency(fieldName);
 
@@ -23,8 +30,9 @@ var Child = function (parent, item, index) {
 	this.index = index;
 	this.name = parent.name;
 	this.value = parent.value && parent.value[index];
-	this.schema = parent.schema && parent.schema.toItemSchema();
 	this.parent = parent;
+	
+	if (parent.schema) this.attachSchema(parent.schema.toItemSchema());
 
 	this.dep = parent.dependency(this.key);
 
@@ -67,18 +75,23 @@ Form.prototype.set = function (value) {
 	});
 };
 
+Form.prototype.attachSchema = function (schema) {
+	this._schemaInstance = schema;
+	_.defaults(this, schema);
+};
+
 // Validation helpers
 Form.prototype.errors = function () {
 	this.dep.depend();
-	return this.schema && this.schema.errors(this.value, this);
+	return this._schemaInstance && this._schemaInstance.errors(this.value, this);
 };
 
 Form.prototype.valid = function () {
 	this.dep.depend();
-	return this.schema && this.schema.match(this.value, this);
+	return this._schemaInstance && this._schemaInstance.match(this.value, this);
 };
 
 Form.prototype.check = function () {
 	this.dep.depend();
-	return this.schema && this.schema.check(this.value, this);
+	return this._schemaInstance && this._schemaInstance.check(this.value, this);
 };

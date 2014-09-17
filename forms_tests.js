@@ -107,3 +107,29 @@ Tinytest.add('Forms - reactive api', function (test) {
 
 	test.equal(autoRunCount, 6);
 });
+
+Tinytest.add('Forms - schema properties are available', function (test) {
+	var form = new Form({
+		name: 'person'
+		, notes: 'notes'
+		, schema: {
+			name: _.isString
+			, children: {
+				schema: {
+					name: _.isString
+				}
+				, asdf: 'gibberish'
+			}
+		}
+	}, {
+		name: 'sam'
+		, children: [
+			{
+				name: 'joe'
+			}
+		]
+	});
+
+	test.equal(form.notes, 'notes');
+	test.equal(form.field('children').asdf, 'gibberish');
+});
