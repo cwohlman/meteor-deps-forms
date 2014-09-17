@@ -133,3 +133,25 @@ Tinytest.add('Forms - schema properties are available', function (test) {
 	test.equal(form.notes, 'notes');
 	test.equal(form.field('children').asdf, 'gibberish');
 });
+
+Tinytest.add('Forms - schema works with dictionaries', function (test) {
+	var form = new Form({
+		name: 'person'
+		, schema: {
+			name: _.isString
+		}
+	}, {
+		name: 'sam'
+		, children: {
+			joe: {
+				name: 'joe'
+			}
+		}
+	});
+
+	test.equal(form.field('name').value, 'sam');
+	test.equal(form.field('children').children().length, 1);
+	test.equal(form.field('children').children()[0].value.name, 'joe');
+	test.equal(form.field('children').children()[0].index, 'joe');
+	test.equal(form.field('children').children()[0].field('name').value, 'joe');
+});
