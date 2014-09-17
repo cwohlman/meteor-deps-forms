@@ -36,8 +36,8 @@ Tinytest.add('Forms - basic api', function (test) {
 
 	test.equal(form.field('name').value, 'sam');
 	test.equal(form.field('children').value.length, 1);
-	test.equal(form.field('children').children()[0].value.name, 'joe');
-	test.equal(form.field('children').children()[0].field('name').value, 'joe');
+	test.equal(form.field('children').values()[0].value.name, 'joe');
+	test.equal(form.field('children').values()[0].field('name').value, 'joe');
 });
 
 Tinytest.add('Forms - reactive api', function (test) {
@@ -93,7 +93,7 @@ Tinytest.add('Forms - reactive api', function (test) {
 	nextValue = 'joey';
 
 	comp = Deps.autorun(function () {
-		test.equal(form.field('children').children()[1].field('name').value, nextValue);
+		test.equal(form.field('children').values()[1].field('name').value, nextValue);
 		autoRunCount++;
 	});
 
@@ -101,7 +101,7 @@ Tinytest.add('Forms - reactive api', function (test) {
 
 	nextValue = 'sammy';
 
-	form.field('children').children()[1].field('name').set('sammy');
+	form.field('children').values()[1].field('name').set('sammy');
 
 	Deps.flush(); comp.stop();
 
@@ -150,8 +150,8 @@ Tinytest.add('Forms - schema works with dictionaries', function (test) {
 	});
 
 	test.equal(form.field('name').value, 'sam');
-	test.equal(form.field('children').children().length, 1);
-	test.equal(form.field('children').children()[0].value.name, 'joe');
-	test.equal(form.field('children').children()[0].index, 'joe');
-	test.equal(form.field('children').children()[0].field('name').value, 'joe');
+	test.equal(form.field('children').values().length, 1);
+	test.equal(form.field('children').values()[0].value.name, 'joe');
+	test.equal(form.field('children').values()[0].index, 'joe');
+	test.equal(form.field('children').values()[0].field('name').value, 'joe');
 });

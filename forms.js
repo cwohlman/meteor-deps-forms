@@ -47,7 +47,7 @@ Form.prototype.field = function (fieldName) {
 	return new Field(this, fieldName);
 };
 
-Form.prototype.children = function () {
+Form.prototype.values = function () {
 	return _.map(this.value, function (child, index) {
 		return new Child(this, child, index);
 	}, this);
