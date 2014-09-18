@@ -11,6 +11,9 @@ Form = function (schema, value) {
 
 	this.dep = new Deps.Dependency();
 	this.dep.deps = {};
+
+	this.valueDep = new Deps.Dependency();
+	this.valueDep.deps = {};
 };
 
 // Form.addHelper = function (helper, childHelper) {
@@ -38,6 +41,7 @@ var Field = function (parent, fieldName) {
 	if (parent.schema) this.attachSchema(parent.schema[fieldName]);
 
 	this.dep = parent.dependency(fieldName);
+	this.valueDep = parent.valueDependency(fieldName);
 
 	this.dep.depend();
 };
@@ -54,6 +58,7 @@ var Child = function (parent, item, index) {
 	if (parent.schema) this.attachSchema(parent.schema.toItemSchema());
 
 	this.dep = parent.dependency(this.key);
+	this.valueDep = parent.valueDependency(this.key);
 
 	this.dep.depend();
 };
@@ -79,6 +84,14 @@ Form.prototype.dependency = function (key) {
 		this.dep.deps[key].deps = {};
 	}
 	return this.dep.deps[key];
+};
+
+Form.prototype.valueDependency = function (key) {
+	if (!this.valueDep.deps[key]) {
+		this.valueDep.deps[key] = new Deps.Dependency();
+		this.valueDep.deps[key].deps = {};
+	}
+	return this.valueDep.deps[key];
 };
 
 Form.prototype.set = function (value) {
@@ -108,12 +121,13 @@ Form.prototype.set = function (value) {
 	// invalidations up the chain.)
 
 	_.each(this.parents, function (a) {
-		a.dep.changed();
+		a.valueDep.changed();
 	});
 };
 
 Form.prototype.get = function () {
 	this.dep.depend();
+	this.valueDep.depend();
 	return this.value;
 };
 
