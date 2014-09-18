@@ -13,10 +13,27 @@ Form = function (schema, value) {
 	this.dep.deps = {};
 };
 
+// Form.addHelper = function (helper, childHelper) {
+
+// };
+
+// XXX we need to do more research into the way deps and the new blaze layout
+// engine work, we might be able to get away with a single dep which is
+// shared by all children.
+// one thing we want to avoid is re-running the child/field constructors if
+// possible...
+
+// XXX Field and Child constructors should specify
+// a property parentInitiallizer which is a constructor
+// fn for generating the parent object if it does not 
+// exist. (should be Object and Array respectively)
+
 var Field = function (parent, fieldName) {
+	console.log('created', fieldName);
 	this.name = fieldName;
 	this.value = parent.value && parent.value[fieldName];
 	this.parent = parent;
+	this.parents = [parent].concat(parent.parents || []);
 
 	if (parent.schema) this.attachSchema(parent.schema[fieldName]);
 
@@ -31,7 +48,9 @@ var Child = function (parent, item, index) {
 	this.name = parent.name;
 	this.value = parent.value && parent.value[index];
 	this.parent = parent;
-	
+
+	this.parents = [parent].concat(parent.parents || []);
+
 	if (parent.schema) this.attachSchema(parent.schema.toItemSchema());
 
 	this.dep = parent.dependency(this.key);
@@ -70,9 +89,32 @@ Form.prototype.set = function (value) {
 	}
 
 	this.dep.changed();
+
+	// children
 	_.each(this.deps, function (a) {
 		a.changed();
 	});
+
+	// parents
+
+	// calling the parent dependency is probably the right thing to do
+	// but has unfortunate implications with regard to re-rendering
+	// luckily blaze handles these excessive invalidations smoothely, but
+	// it would be nice to avoid having dependencies in the Field and Child
+	// constructors.
+
+	// an alternative would be to move the dependency chaining to the get
+	// function (send dependencies down the chain instead of sending
+	// invalidations up the chain.)
+
+	_.each(this.parents, function (a) {
+		a.dep.changed();
+	});
+};
+
+Form.prototype.get = function () {
+	this.dep.depend();
+	return this.value;
 };
 
 Form.prototype.attachSchema = function (schema) {

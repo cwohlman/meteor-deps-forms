@@ -155,3 +155,6 @@ Tinytest.add('Forms - schema works with dictionaries', function (test) {
 	test.equal(form.field('children').values()[0].index, 'joe');
 	test.equal(form.field('children').values()[0].field('name').value, 'joe');
 });
+
+// XXX implement and handle case in parent.child.baby where child does not exist
+// and user is attempting to set baby
