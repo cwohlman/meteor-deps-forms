@@ -1,9 +1,9 @@
 {
   "name": "forms",
   "description": "A simple library for making forms reactive.",
-  "homepage": "",
+  "homepage": "https://github.com/cwohlman/meteor-deps-forms",
   "author": "Joshua Ohlman <codewriterohs@gmail.com>",
   "version": "0.0.1",
-  "git": "",
+  "git": "https://github.com/cwohlman/meteor-deps-forms.git",
   "packages": {}
 }
